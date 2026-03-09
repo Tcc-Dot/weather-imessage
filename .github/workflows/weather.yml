@@ -1,0 +1,29 @@
+name: 广州天气+穿衣指南 iMessage 每晚23:50
+on:
+  schedule:
+    - cron: '50 15 * * *'  # 北京时间 23:50 自动发送
+  workflow_dispatch:
+
+jobs:
+  send_weather:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 获取广州天气
+        id: get_weather
+        run: |
+          WEATHER=$(curl -s "https://wttr.in/Guangzhou?format=3")
+          echo "weather=$WEATHER" >> $GITHUB_OUTPUT
+
+      - name: 发送到 iMessage
+        uses: huiyan0510/imessage-action@v1
+        with:
+          to: 1104349364@qq.com
+          text: |
+            🌙 晚安～明天广州天气预报
+            ${{ steps.get_weather.outputs.weather }}
+
+            👕 明日穿衣指南：
+            短袖为主，透气舒适，注意防晒防暑。
+
+            💡 出行提示：
+            适合通勤/外出，紫外线较强，记得防晒。
